@@ -25,7 +25,7 @@
 		}
 		circle:hover {
 		  	stroke: red;
-		  	stroke-width: 2px;
+		  	stroke-width: 3px;
 		  	cursor: crosshair;
 		}
 
@@ -38,19 +38,19 @@
 			z-index: 10;
 		}
 		p.tooltip-text{
-			margin: 1px;
-			padding: 1px;
+			margin: 0px;
+			padding: 0px;
 		}
 
 		div.menu{
 			position: fixed;
-			margin: 1px;
-			padding: 10px;
+			margin: 0px;
+			padding: 0px;
 			top: 0px;
 			right: 0px;
 			width: 250px;
 			height: 500px;
-			background: rgba(200,200,200,.8);
+			background: rgba(255,255,255,.8);
 		}
 
 		em{
@@ -70,6 +70,8 @@
 	<div class="tooltip">
 		<p class="tooltip-text" id="title">This is the title</p>
 		<p class="tooltip-text" id="price">This is the price</p>
+		<p class="tooltip-text" id="lat">This is the latitude</p>
++		<p class="tooltip-text" id="long">This is the longitude</p>
 	</div>
 
 	<!-- EXPERIMENT WITH OTHER FORM ELEMENTS, AND ADD SOME TEXT TO THE MENU TO EXPLAIN WHAT IS HAPPENING ON THE SITE -->
@@ -97,9 +99,9 @@
 		var tooltip = d3.select("div.tooltip");
 		var tooltip_title = d3.select("#title");
 		var tooltip_price = d3.select("#price");
-
-
-		var map = L.map('map').setView([22.539029, 114.062076], 16);
+		var tooltip_lat = d3.select("#lat");
++		var tooltip_long = d3.select("#long")
++		var map = L.map('map').setView([22.539029, 114.062076], 16);
 
 		//this is the OpenStreetMap tile implementation
 
@@ -132,6 +134,7 @@
 		var transform = d3.geo.transform({point: projectStream});
 		var path = d3.geo.path().projection(transform);
 
+
 		function updateData(){
 
 			var mapBounds = map.getBounds();
@@ -155,6 +158,9 @@
 						tooltip.style("visibility", "visible");
 						tooltip_title.text(d.properties.name);
 						tooltip_price.text("Price: " + d.properties.price);
+						tooltip_lat.text("Latitude: " + d.geometry.coordinates[0]);
++						tooltip_long.text("Longitude: " + d.geometry.coordinates[1]);
++						console.log(d);
 					})
 					.on("mousemove", function(){
 						tooltip.style("top", (d3.event.pageY-10)+"px")
@@ -180,8 +186,7 @@
 				        .attr("height", bottomRight[1] - topLeft[1] + (buffer * 2))
 				        .style("left", (topLeft[0] - buffer) + "px")
 				        .style("top", (topLeft[1] - buffer) + "px");
-
-				    g   .attr("transform", "translate(" + (-topLeft[0] + buffer) + "," + (-topLeft[1] + buffer) + ")");
+							g   .attr("transform", "translate(" + (-topLeft[0] + buffer) + "," + (-topLeft[1] + buffer) + ")");
 
 				    // update circle position and size
 				    circles
